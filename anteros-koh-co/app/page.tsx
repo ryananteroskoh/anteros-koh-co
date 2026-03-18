@@ -1,7 +1,23 @@
-export default function Home() {
+import { sanityClient, articleQuery, videoQuery, streamQuery } from '../lib/sanity'
+
+async function getContent() {
+  const [articles, videos, stream] = await Promise.all([
+    sanityClient.fetch(articleQuery),
+    sanityClient.fetch(videoQuery),
+    sanityClient.fetch(streamQuery),
+  ])
+  return { articles, videos, stream }
+}
+
+function formatDate(dateString: string) {
+  return new Date(dateString).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+}
+
+export default async function Home() {
+  const { articles, videos, stream } = await getContent()
+
   return (
     <>
-      {/* NAV */}
       <nav>
         <a href="/" className="wordmark">Anteros Koh <em>co·coa</em></a>
         <ul className="nav-links">
@@ -13,7 +29,6 @@ export default function Home() {
         <div className="nav-give"><a href="#give">Give freely</a></div>
       </nav>
 
-      {/* HERO */}
       <div className="hero">
         <div className="hero-ocean"></div>
         <div className="tide-line"></div>
@@ -38,7 +53,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ALCHEMY STRIP */}
       <div className="alchemy-strip">
         <div className="alch-stage">
           <div className="alch-symbol">🜔</div>
@@ -63,7 +77,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* WRITING */}
       <section className="section" id="writing">
         <div className="section-label">Writing</div>
         <div className="search-wrap">
@@ -71,71 +84,85 @@ export default function Home() {
           <input className="search-input" type="text" placeholder="Search by feeling, theme, or word…" />
         </div>
         <div className="articles-grid">
-          <div className="article-card">
-            <div className="card-tag">Myth · Love · Shadow</div>
-            <div className="card-title">Anteros and the Love You Owe Yourself</div>
-            <div className="card-excerpt">The god who avenges unreturned love is not cruel — he is the part of you that refuses to keep giving what is never received back.</div>
-            <div className="card-meta">March 2025 · 8 min</div>
-          </div>
-          <div className="article-card">
-            <div className="card-tag">Strength · Individuation</div>
-            <div className="card-title">The Garden Is Not Soft</div>
-            <div className="card-excerpt">Peace is not passivity. Every garden that has ever lasted had a wall. To protect something beautiful, you must become someone capable of standing at the gate.</div>
-            <div className="card-meta">February 2025 · 11 min</div>
-          </div>
-          <div className="article-card">
-            <div className="card-tag">Alchemy · Transformation</div>
-            <div className="card-title">What the Fire Does Not Destroy</div>
-            <div className="card-excerpt">The alchemists were not chasing gold. They were documenting what happens to a person who refuses to stay unrefined. The furnace was always internal.</div>
-            <div className="card-meta">January 2025 · 9 min</div>
-          </div>
+          {articles.length > 0 ? articles.map((article: any) => (
+            <div className="article-card" key={article._id}>
+              <div className="card-tag">{article.category?.replace('-', ' & ')}</div>
+              <div className="card-title">{article.title}</div>
+              <div className="card-excerpt">{article.excerpt}</div>
+              <div className="card-meta">{article.publishedAt ? formatDate(article.publishedAt) : ''}</div>
+            </div>
+          )) : (
+            <>
+              <div className="article-card">
+                <div className="card-tag">Myth · Love · Shadow</div>
+                <div className="card-title">Anteros and the Love You Owe Yourself</div>
+                <div className="card-excerpt">The god who avenges unreturned love is not cruel — he is the part of you that refuses to keep giving what is never received back.</div>
+                <div className="card-meta">Coming soon</div>
+              </div>
+              <div className="article-card">
+                <div className="card-tag">Strength · Individuation</div>
+                <div className="card-title">The Garden Is Not Soft</div>
+                <div className="card-excerpt">Peace is not passivity. Every garden that has ever lasted had a wall. To protect something beautiful, you must become someone capable of standing at the gate.</div>
+                <div className="card-meta">Coming soon</div>
+              </div>
+              <div className="article-card">
+                <div className="card-tag">Alchemy · Transformation</div>
+                <div className="card-title">What the Fire Does Not Destroy</div>
+                <div className="card-excerpt">The alchemists were not chasing gold. They were documenting what happens to a person who refuses to stay unrefined. The furnace was always internal.</div>
+                <div className="card-meta">Coming soon</div>
+              </div>
+            </>
+          )}
         </div>
       </section>
 
-      {/* VIDEOS */}
       <section className="video-section" id="videos">
         <div className="section-label">Videos</div>
         <div className="videos-grid">
-          <a className="video-card" href="https://youtube.com" target="_blank" rel="noopener noreferrer">
-            <div className="video-thumb">
-              <div className="video-thumb-gradient"></div>
-              <div className="play-btn"><div className="play-icon"></div></div>
-            </div>
-            <div className="video-body">
-              <div className="video-tag">Myth · Eros · Anteros</div>
-              <div className="video-title">The God Who Demands Love Be Returned</div>
-              <div className="video-desc">A close reading of what Anteros actually represents — and why requited love is a form of strength, not luck.</div>
-              <span className="video-link">Watch on YouTube</span>
-            </div>
-          </a>
-          <a className="video-card" href="https://youtube.com" target="_blank" rel="noopener noreferrer">
-            <div className="video-thumb">
-              <div className="video-thumb-gradient" style={{background: 'linear-gradient(135deg, #1A2E3E 0%, #2A4A5A 60%, #3A7A6A 100%)'}}></div>
-              <div className="play-btn"><div className="play-icon"></div></div>
-            </div>
-            <div className="video-body">
-              <div className="video-tag">Shadow · Ocean · Release</div>
-              <div className="video-title">What the Tide Knows About Letting Go</div>
-              <div className="video-desc">Sitting at the shore and thinking through grief, release, and what it means to return to yourself after loss.</div>
-              <span className="video-link">Watch on YouTube</span>
-            </div>
-          </a>
-          <a className="video-card" href="https://youtube.com" target="_blank" rel="noopener noreferrer">
-            <div className="video-thumb">
-              <div className="video-thumb-gradient" style={{background: 'linear-gradient(135deg, #2E1A0E 0%, #6B3C22 60%, #9C5A35 100%)'}}></div>
-              <div className="play-btn"><div className="play-icon"></div></div>
-            </div>
-            <div className="video-body">
-              <div className="video-tag">Alchemy · Inner Work</div>
-              <div className="video-title">The Breaking Down: Why Falling Apart Is the First Step</div>
-              <div className="video-desc">The darkening is not the failure. It is the necessary dissolution before anything real can form.</div>
-              <span className="video-link">Watch on YouTube</span>
-            </div>
-          </a>
+          {videos.length > 0 ? videos.map((video: any) => (
+            <a className="video-card" href={video.youtubeUrl} target="_blank" rel="noopener noreferrer" key={video._id}>
+              <div className="video-thumb">
+                <div className="video-thumb-gradient"></div>
+                <div className="play-btn"><div className="play-icon"></div></div>
+              </div>
+              <div className="video-body">
+                <div className="video-tag">{video.category?.replace('-', ' & ')}</div>
+                <div className="video-title">{video.title}</div>
+                <div className="video-desc">{video.description}</div>
+                <span className="video-link">Watch on YouTube</span>
+              </div>
+            </a>
+          )) : (
+            <>
+              <a className="video-card" href="https://youtube.com" target="_blank" rel="noopener noreferrer">
+                <div className="video-thumb">
+                  <div className="video-thumb-gradient"></div>
+                  <div className="play-btn"><div className="play-icon"></div></div>
+                </div>
+                <div className="video-body">
+                  <div className="video-tag">Myth · Eros · Anteros</div>
+                  <div className="video-title">The God Who Demands Love Be Returned</div>
+                  <div className="video-desc">A close reading of what Anteros actually represents — and why requited love is a form of strength, not luck.</div>
+                  <span className="video-link">Watch on YouTube</span>
+                </div>
+              </a>
+              <a className="video-card" href="https://youtube.com" target="_blank" rel="noopener noreferrer">
+                <div className="video-thumb">
+                  <div className="video-thumb-gradient" style={{background: 'linear-gradient(135deg, #1A2E3E 0%, #2A4A5A 60%, #3A7A6A 100%)'}}></div>
+                  <div className="play-btn"><div className="play-icon"></div></div>
+                </div>
+                <div className="video-body">
+                  <div className="video-tag">Shadow · Ocean · Release</div>
+                  <div className="video-title">What the Tide Knows About Letting Go</div>
+                  <div className="video-desc">Sitting at the shore and thinking through grief, release, and what it means to return to yourself after loss.</div>
+                  <span className="video-link">Watch on YouTube</span>
+                </div>
+              </a>
+            </>
+          )}
         </div>
       </section>
 
-      {/* STRENGTH BANNER */}
       <div className="strength-banner">
         <div className="strength-quote">
           Softness is the fruit.<br />
@@ -147,26 +174,33 @@ export default function Home() {
         </div>
       </div>
 
-      {/* STREAM */}
       <section className="section" id="stream">
         <div className="section-label">Stream</div>
         <div className="thoughts-stream">
-          <div className="thought-entry">
-            <p className="thought-text">&ldquo;The prima materia is never somewhere else. It is always the thing you least want to look at.&rdquo;</p>
-            <div className="thought-date">March 9</div>
-          </div>
-          <div className="thought-entry">
-            <p className="thought-text">&ldquo;You cannot pour from a cup you&apos;ve convinced yourself doesn&apos;t exist. The first act of love is admitting you have one.&rdquo;</p>
-            <div className="thought-date">February 28</div>
-          </div>
-          <div className="thought-entry">
-            <p className="thought-text">&ldquo;The ocean keeps nothing. Returns without grief. Comes back fuller. The tide is a better teacher than most books.&rdquo;</p>
-            <div className="thought-date">February 14</div>
-          </div>
+          {stream.length > 0 ? stream.map((entry: any) => (
+            <div className="thought-entry" key={entry._id}>
+              <p className="thought-text">&ldquo;{entry.thought}&rdquo;</p>
+              <div className="thought-date">{entry.publishedAt ? formatDate(entry.publishedAt) : ''}</div>
+            </div>
+          )) : (
+            <>
+              <div className="thought-entry">
+                <p className="thought-text">&ldquo;The prima materia is never somewhere else. It is always the thing you least want to look at.&rdquo;</p>
+                <div className="thought-date">March 2025</div>
+              </div>
+              <div className="thought-entry">
+                <p className="thought-text">&ldquo;You cannot pour from a cup you&apos;ve convinced yourself doesn&apos;t exist. The first act of love is admitting you have one.&rdquo;</p>
+                <div className="thought-date">February 2025</div>
+              </div>
+              <div className="thought-entry">
+                <p className="thought-text">&ldquo;The ocean keeps nothing. Returns without grief. Comes back fuller. The tide is a better teacher than most books.&rdquo;</p>
+                <div className="thought-date">February 2025</div>
+              </div>
+            </>
+          )}
         </div>
       </section>
 
-      {/* DONATION */}
       <section className="donation-section" id="give">
         <div className="section-label" style={{color: 'var(--tide)'}}>
           <span style={{display:'inline-block', width:'26px', height:'1px', background:'var(--tide)', marginRight:'14px'}}></span>
@@ -182,11 +216,10 @@ export default function Home() {
         <a className="btn-ocean" href="https://buymeacoffee.com" target="_blank" rel="noopener noreferrer">Give when it&apos;s real</a>
       </section>
 
-      {/* FOOTER */}
       <footer>
         <div className="footer-brand">Anteros Koh Co·coa — Anteroskoh LLC</div>
         <div className="footer-note">All knowledge free, always.<br />The gold is already in you.</div>
       </footer>
     </>
-  );
+  )
 }
