@@ -1,12 +1,13 @@
 import { defineConfig } from 'sanity'
-import { deskTool } from 'sanity/desk'
+import { structuredArrayTool } from 'sanity/desk'
 
 export default defineConfig({
   name: 'anteros-koh-co',
   title: 'Anteros Koh Co.',
   projectId: 'eompj9xy',
   dataset: 'production',
-  plugins: [deskTool()],
+  basePath: '/studio',
+  plugins: [structuredArrayTool()],
   schema: {
     types: [
       {
