@@ -1,5 +1,5 @@
 import { defineConfig } from 'sanity'
-import { structuredArrayTool } from 'sanity/desk'
+import { deskTool } from 'sanity/desk'
 
 export default defineConfig({
   name: 'anteros-koh-co',
@@ -7,7 +7,7 @@ export default defineConfig({
   projectId: 'eompj9xy',
   dataset: 'production',
   basePath: '/studio',
-  plugins: [structuredArrayTool()],
+  plugins: [deskTool()],
   schema: {
     types: [
       {
